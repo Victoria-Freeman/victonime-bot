@@ -9,17 +9,17 @@ from playwright.sync_api import Page
 import requests
 from imagekitio import ImageKit
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
+import config as Config
 
-@contextmanager
 def openBrowser(block_images=True, humanize=False, headless=False):
-    with Camoufox(
+    browser = Camoufox(
         block_images=block_images,
         i_know_what_im_doing=True,
         humanize=humanize,
         headless=headless
-    ) as browser:
-        page: Page = browser.new_page(reduced_motion="reduce")
-        yield page
+    )
+    page: Page = browser.new_page(reduced_motion="reduce")
+    return page
 
 def uploadToImageKit(nextId, link):
     finalImagePath = os.path.expanduser(f"~/tmpfs/{nextId}.avif")
@@ -39,7 +39,7 @@ def uploadToImageKit(nextId, link):
     os.system(f"rm {finalImagePath}")
 
 def getAnimeJson():
-    return requests.get(os.getenv("ANIMESJSON")).json()
+    return requests.get(Config.getMetadataUrl()+".json").json()
 def getGenresJson():
     return requests.get(os.getenv("GENRESJSON")).json()
 

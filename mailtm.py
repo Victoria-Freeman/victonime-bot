@@ -5,7 +5,7 @@ import requests
 import random
 import string
 from typing import Tuple, Dict,  Union
-import helper
+import helper as Helper
 
 class MailTM:
     # BASE_URL = "https://api.mail.tm"
@@ -35,7 +35,7 @@ class MailTM:
 
     def create_account(self, email: str = None, password: str = None) -> Dict:
         fake = Faker()
-        idk = f"{fake.first_name().lower()}{fake.last_name().lower()}{helper.generate_random_string(2)}"
+        idk = f"{fake.first_name().lower()}{fake.last_name().lower()}{Helper.getRandomString(4)}"
         if not email:
             email = f"{idk}@teihu.com" 
         if not password:

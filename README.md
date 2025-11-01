@@ -21,10 +21,6 @@ Used for creating all the neccessary account
 Only the part before @gmail.com \
 Will be used to register some accounts
 
-##### ANIMESJSON
-Link to animes.json \
-Basically the list of animes. Like a manifest just like in [victonime](https://victonime.vercel.app)
-
 ##### GENRESJSON 
 Link to genres that should return smth like \
 ```json
