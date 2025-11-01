@@ -5,6 +5,7 @@ from time import sleep
 import helper as Helper
 import config as Config
 import wasabi as Wasabi
+import metadata_json as MetadataJson
 
 import click
 
@@ -111,23 +112,29 @@ def new_anime(link):
         pirctureLink = hrefs[int(input(f"({len(hrefs)}) Choose a poster: ")) - 1]
         Helper.uploadToImageKit(newId, pirctureLink)
 
-        notifier = Notifier()
-        notifier.send_notification(f"""```json
-"{newId}": {{
-    "t": "{title}",
-    "o": "{original}",
-    "p": "{newId}",
-    "g": "{genres}",
-    "y": "{year}",
-    "u": {Config.getWhereToUpload()},
-    "s": {{
-        "s1": {{
-            "t": "1 сезон",
-            "e": {episodes}
-        }}
-    }}
-}},
-        ```""")
+#         notifier = Notifier()
+#         notifier.send_notification(f"""```json
+# "{newId}": {{
+#     "t": "{title}",
+#     "o": "{original}",
+#     "p": "{newId}",
+#     "g": "{genres}",
+#     "y": "{year}",
+#     "u": {Config.getWhereToUpload()},
+#     "s": {{
+#         "s1": {{
+#             "t": "1 сезон",
+#             "e": {episodes}
+#         }}
+#     }}
+# }},
+#         ```""")
         parse_season.callback(link)
         Helper.downloadAnime()
         Wasabi.upload.callback()
+        MetadataJson.addEntry(newId, title, original, newId, genres, year, Config.getWhereToUpload(), {
+            "s1": {
+                "t": "1 сезон",
+                "e": episodes
+            }
+        })

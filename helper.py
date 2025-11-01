@@ -9,6 +9,7 @@ from playwright.sync_api import Page
 import requests
 from imagekitio import ImageKit
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
+import config as Config
 
 @contextmanager
 def openBrowser(block_images=True, humanize=False, headless=False):
@@ -39,7 +40,7 @@ def uploadToImageKit(nextId, link):
     os.system(f"rm {finalImagePath}")
 
 def getAnimeJson():
-    return requests.get(os.getenv("ANIMESJSON")).json()
+    return requests.get(Config.getMetadataUrl()+".json").json()
 def getGenresJson():
     return requests.get(os.getenv("GENRESJSON")).json()
 

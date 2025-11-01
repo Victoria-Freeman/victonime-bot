@@ -58,10 +58,31 @@ def setBunnyAccount(email):
     }
     write()
 
+def setBunnyStorageData(storageName, storageKey):
+    config()['bunny']['storage'] = {}
+    config()['bunny']['storage']['name'] = storageName
+    config()['bunny']['storage']['key'] = storageKey
+    write()
+
+def setBunnyAccountAPIKeys(key, pullzoneId):
+    config()['bunny']["apiKey"] = key
+    config()['bunny']["pullzoneId"] = pullzoneId
+    write()
+
+def getBunnyStorageData():
+    return config()['bunny']['storage']['name'], config()['bunny']['storage']['key']
+
+def getBunnyAccountAPIKeys():
+    return config()['bunny']["apiKey"], config()['bunny']["pullzoneId"]
+
 def setWasabiCurrentLoginsAsOld():
     config()['wasabi']['oldLogins'] = []
     for login in config()['wasabi']['logins'].copy():
         config()['wasabi']['oldLogins'].append(login.copy())
+    write()
+
+def setMetadataUrl(bunnyStorageName):
+    config()['config']['metadataUrl'] = f"https://{bunnyStorageName}.b-cdn.net/metadata"
     write()
 
 def getWhereToUpload():
@@ -86,3 +107,6 @@ acl = private
     config_file = config_dir / "rclone.conf"
     with config_file.open("w", encoding="utf-8") as file:
         file.write(text)
+
+def getMetadataUrl():
+    return config()['config']['metadataUrl']
