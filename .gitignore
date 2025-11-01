@@ -1,5 +1,10 @@
-.venv
 __pycache__
 
-.env
 config.yaml
+
+.*
+
+jsons/
+
+metadata.json
+
