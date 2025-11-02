@@ -41,6 +41,7 @@ def _login(page):
     sleep(4)
 
 def _parseSeason(link):
+    # return None, None, None
     with Helper.openBrowser(headless=True) as page:
         fullM3u8Links = []
         page.on("response", lambda response: checkResponse(response, fullM3u8Links))
@@ -50,8 +51,9 @@ def _parseSeason(link):
         original = page.text_content("div.mb-3:nth-child(2)")
         episodes = _getEpisodesAmount(page)
         print(episodes)
-        lastSeasonId, lastSeason, animeId = Helper.getLastSeason(original)
-        if animeId and Helper.getAnimeJson()[animeId]['u'] == Config.getWhereToUpload():
+        anime = Helper.getAnimeBasedOnOriginal(original)
+        lastSeasonKey, lastSeason = next(reversed(anime['s'].items()))
+        if anime and anime['u'] == Config.getWhereToUpload():
             episodesLinks = _getEpisodesLinks(page, episodes - lastSeason['e'], 0)
         else: episodesLinks = _getEpisodesLinks(page, episodes, 0)
         for link in episodesLinks:
@@ -60,16 +62,17 @@ def _parseSeason(link):
                 page.goto("https://anilibria.top" + link)
                 page.click(".v-btn")
                 sleep(2)
-        page.wait_for_load_state("networkidle", timeout=100)
+        page.wait_for_load_state("networkidle", timeout=100000)
         m3u8Links = [link.split("?")[0] for link in fullM3u8Links]
         data = {
-            Helper.getNextIdForAnime() if not animeId else animeId: {
-                "s1" if not lastSeasonId else lastSeasonId: m3u8Links
+            Helper.getNextIdForAnime() if not anime else anime['id']: {
+                "s1" if not lastSeasonKey else lastSeasonKey: m3u8Links
             }
         }
         with open("anime.json", "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-        return animeId, lastSeasonId, episodes
+        anime['s'][lastSeasonKey]['e'] = episodes
+        return anime
 
 
 codeForQuality = [
@@ -86,10 +89,10 @@ def parse_season(link):
 @click.command()
 @click.argument("link", required=True)
 def update(link):
-    animeId, lastSeasonId, episodes = _parseSeason(link)
+    anime = _parseSeason(link)
     Helper.downloadAnime()
     Wasabi.upload.callback()
-    MetadataJson.addEntry(animeId)
+    MetadataJson.addEntry(anime['id'], anime['t'], anime['o'], anime['p'], anime['g'], anime['y'], anime['u'], anime['s'])
     # notifier = Notifier()
     # notifier.send_notification(f"NIGGA UPDATE {animeId} > {lastSeasonId} > \"e\" TO {episodes}")
 

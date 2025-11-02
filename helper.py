@@ -57,6 +57,13 @@ def getLastSeason(original):
         return lastSeasonKey, lastSeason, id
     return None, None, None
 
+def getAnimeBasedOnOriginal(original):
+    json = getAnimeJson()
+    for id, entry in json.items():
+        if entry['o'] != original: continue
+        return {"id": id, **entry}
+    return None
+
 def getNextIdForAnime():
     letters = string.ascii_lowercase + string.ascii_uppercase
     json = getAnimeJson()
