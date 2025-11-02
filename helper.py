@@ -3,7 +3,7 @@ import json
 import os
 import random
 import string
-from camoufox import Camoufox
+from camoufox.sync_api import Camoufox
 from dotenv import load_dotenv
 from playwright.sync_api import Page
 import requests
