@@ -1,15 +1,19 @@
-from contextlib import contextmanager
+
 import json
 import os
 import random
 import string
-from camoufox import Camoufox
-from dotenv import load_dotenv
-from playwright.sync_api import Page
+
+
 import requests
 from imagekitio import ImageKit
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
 import config as Config
+from contextlib import contextmanager
+from camoufox import Camoufox
+from playwright.sync_api import Page
+import threading
+import queue
 
 def openBrowser(block_images=True, humanize=False, headless=False):
     browser = Camoufox(
