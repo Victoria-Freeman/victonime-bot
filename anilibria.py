@@ -89,8 +89,9 @@ def update(link):
     animeId, lastSeasonId, episodes = _parseSeason(link)
     Helper.downloadAnime()
     Wasabi.upload.callback()
-    notifier = Notifier()
-    notifier.send_notification(f"NIGGA UPDATE {animeId} > {lastSeasonId} > \"e\" TO {episodes}")
+    MetadataJson.addEntry(animeId)
+    # notifier = Notifier()
+    # notifier.send_notification(f"NIGGA UPDATE {animeId} > {lastSeasonId} > \"e\" TO {episodes}")
 
 @click.command()
 @click.argument("link", required=True)

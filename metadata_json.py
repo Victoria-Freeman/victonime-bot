@@ -72,6 +72,10 @@ def upload():
         storage.PutFile(file, file, "jsons")
     cdn.PurgePullZoneCache(pullzoneId)
 
+def sync():
+    os.system("rm metadata.json")
+    storage.DownloadFile("metadata.json")
+
 def setup():
     toArray()
     sortByGenresId()
@@ -79,8 +83,17 @@ def setup():
     sortByAnimes()
     upload()
 
-def addEntry(id, title, original, poster, genres, years, whereToUpload, seasons):
+def addEntry(id, title="", original="", poster="", genres="", years="", whereToUpload="", seasons=""):
     global _metadata
+    if id in metadata():
+        title = metadata()[id]['t']
+        original = metadata()[id]['o']
+        poster = metadata()[id]['p']
+        genres = metadata()[id]['g']
+        years = metadata()[id]['y']
+        whereToUpload = metadata()[id]['u']
+        seasons = metadata()[id]['s']
+        del metadata()[id]
     entry = {
         "t": title,
         "o": original,
