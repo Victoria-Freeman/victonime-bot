@@ -4,22 +4,23 @@ import os
 import random
 import string
 from camoufox import Camoufox
-from dotenv import load_dotenv
+from contextlib import contextmanager
 from playwright.sync_api import Page
 import requests
 from imagekitio import ImageKit
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
 import config as Config
 
+@contextmanager
 def openBrowser(block_images=True, humanize=False, headless=False):
-    camoufox = Camoufox(
+    with Camoufox(
         block_images=block_images,
         i_know_what_im_doing=True,
         humanize=humanize,
         headless=headless
-    )
-    page: Page = camoufox.browser.new_page(reduced_motion="reduce")
-    return page
+    ) as browser:
+        page = browser.new_page()
+        yield page
 
 def uploadToImageKit(nextId, link):
     finalImagePath = os.path.expanduser(f"~/tmpfs/{nextId}.avif")
@@ -54,7 +55,7 @@ def getLastSeason(original):
         if entry['o'] != original: continue
         lastSeasonKey, lastSeason = next(reversed(entry['s'].items()))
         return lastSeasonKey, lastSeason, id
-    return None
+    return None, None, None
 
 def getNextIdForAnime():
     letters = string.ascii_lowercase + string.ascii_uppercase

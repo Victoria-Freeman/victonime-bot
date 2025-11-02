@@ -60,7 +60,7 @@ def _parseSeason(link):
                 page.goto("https://anilibria.top" + link)
                 page.click(".v-btn")
                 sleep(2)
-        page.wait_for_load_state("networkidle")
+        page.wait_for_load_state("networkidle", timeout=100)
         m3u8Links = [link.split("?")[0] for link in fullM3u8Links]
         data = {
             Helper.getNextIdForAnime() if not animeId else animeId: {
@@ -104,7 +104,7 @@ def new_anime(link):
         episodes = _getEpisodesAmount(page)
         newId = Helper.getNextIdForAnime()
 
-        page.goto(f"https://myanimelist.net/anime.php?q={original}", wait_until="domcontentloaded")
+        page.goto(f"https://myanimelist.net/anime.php?q={original}")
         page.click("#accept-btn")
         page.goto(page.get_attribute(".js-categories-seasonal > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(2) > td:nth-child(2) > div:nth-child(1) > a:nth-child(2)", "href") + "/pics")
 
@@ -129,12 +129,12 @@ def new_anime(link):
 #     }}
 # }},
 #         ```""")
-        parse_season.callback(link)
-        Helper.downloadAnime()
-        Wasabi.upload.callback()
-        MetadataJson.addEntry(newId, title, original, newId, genres, year, Config.getWhereToUpload(), {
-            "s1": {
-                "t": "1 сезон",
-                "e": episodes
-            }
-        })
+    parse_season.callback(link)
+    Helper.downloadAnime()
+    Wasabi.upload.callback()
+    MetadataJson.addEntry(newId, title, original, newId, genres, year, Config.getWhereToUpload(), {
+        "s1": {
+            "t": "1 сезон",
+            "e": episodes
+        }
+    })

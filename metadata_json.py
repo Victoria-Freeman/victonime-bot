@@ -80,6 +80,7 @@ def setup():
     upload()
 
 def addEntry(id, title, original, poster, genres, years, whereToUpload, seasons):
+    global _metadata
     entry = {
         "t": title,
         "o": original,
@@ -92,4 +93,5 @@ def addEntry(id, title, original, poster, genres, years, whereToUpload, seasons)
     data = {id: entry, **metadata()}
     with open("metadata.json", "w") as file:
         json.dump(data, file, ensure_ascii=False, indent=2)
+    _metadata = None
     setup()
