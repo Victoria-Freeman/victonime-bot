@@ -1,26 +1,51 @@
-from contextlib import contextmanager
+
 import json
 import os
 import random
 import string
-from camoufox.sync_api import Camoufox
-from dotenv import load_dotenv
-from playwright.sync_api import Page
+
+
 import requests
 from imagekitio import ImageKit
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
 import config as Config
+from contextlib import contextmanager
+from camoufox import Camoufox
+from playwright.sync_api import Page
+import threading
+import queue
 
 @contextmanager
 def openBrowser(block_images=True, humanize=False, headless=False):
-    with Camoufox(
-        block_images=block_images,
-        i_know_what_im_doing=True,
-        humanize=humanize,
-        headless=headless
-    ) as browser:
-        page: Page = browser.new_page(reduced_motion="reduce")
+    """
+    Opens a Playwright Sync browser in a separate thread to avoid asyncio loop issues.
+    Yields a Page object.
+    """
+    q = queue.Queue()
+
+    def run_browser():
+        with Camoufox(
+            block_images=block_images,
+            i_know_what_im_doing=True,
+            humanize=humanize,
+            headless=headless
+        ) as browser:
+            page: Page = browser.new_page(reduced_motion="reduce")
+            q.put(page)
+            # Block until main thread signals exit
+            q.get()
+
+    thread = threading.Thread(target=run_browser)
+    thread.start()
+
+    page: Page = q.get()  # Get the page from the thread
+    try:
         yield page
+    finally:
+        # Signal the thread to exit
+        q.put(None)
+        thread.join()
+
 
 def uploadToImageKit(nextId, link):
     finalImagePath = os.path.expanduser(f"~/tmpfs/{nextId}.avif")
